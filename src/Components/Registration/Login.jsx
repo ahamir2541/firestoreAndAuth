@@ -1,8 +1,9 @@
 import React, {useEffect, useState} from 'react';
 import firebase from '../../Firebase/firebase'
-import { createUserProfileDocument } from '../../Firebase/firebase'
+import { connect } from 'react-redux'
+import { createUserProfileDocument, addCollectionAndDocuments } from '../../Firebase/firebase'
 
-const Login = () => {
+const Login = ({collectionsArray}) => {
     const [currentUser, setCurrentUser] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('')
@@ -22,7 +23,7 @@ const Login = () => {
     // google sign up method
     const googleInHandler = () => {
         var provider = new firebase.auth.GoogleAuthProvider();
-
+        provider.setCustomParameters({ prompt: 'select_account' });
         firebase.auth().signInWithPopup(provider).then(function(result) {
             console.log(result)
           }).catch(function(error) {
@@ -57,6 +58,13 @@ const Login = () => {
                 setCurrentUser(userAuth)
             }
 
+            // app to firestore data send
+            // const collectionItem = collectionsArray.map(({title, items}) => ({title, items}) )
+
+            // addCollectionAndDocuments('collectionItems', 
+            // collectionItem
+            // )
+            
         })
 
         return () => {
@@ -103,4 +111,8 @@ const Login = () => {
     );
 };
 
-export default Login;
+const mapStateToProps = state => ({
+    collectionsArray : state.shop.collections
+})
+
+export default connect(mapStateToProps)(Login);
